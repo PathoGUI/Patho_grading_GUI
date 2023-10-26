@@ -23,12 +23,7 @@ Number of biopsy (filtered) : 145
 
 Number of patients (filtered) : 52
 
-3 CSV files in the /Data folder:
-- `human-observer-study-feedback-2D-2022-9-20.csv`:
-        Grades given by 6 pathologists viewing 2D patho images.
-- `human-observer-study-feedback-3D-2022-12-20.csv`: 
-        Grades given by 6 pathologists viewing 3D patho images.
-- `5yrBCR.csv`: BCR outcome for all patients
+![Sample data](./Data/Image_readme.png)
 
 ## Run example:
 

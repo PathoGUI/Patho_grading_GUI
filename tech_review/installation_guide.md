@@ -17,3 +17,9 @@ conda install matplotlib=3.5.2
 ```
 conda install pyqt=5.15.7
 ```
+### Alternately
+
+Run: 
+```
+conda create env create -f CSE583.yml
+```

@@ -1,98 +1,83 @@
 import tkinter as tk
-from tkinter import ttk
-import matplotlib.pyplot as plt
+from tkinter import Label, Entry, StringVar, OptionMenu
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import pandas as pd
-import csv
+from matplotlib.figure import Figure
 
-class MainWindow:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("ROI Preview")
+def clear_all():
+    # Add code to clear the canvas or perform any other clearing actions
+    pass
 
-        self.figure = plt.figure()
-        self.canvas = FigureCanvasTkAgg(self.figure, master=root)
-        self.canvas.get_tk_widget().grid(row=0, column=0, columnspan=3, rowspan=5, sticky="nsew")
+def save_and_next():
+    # Add code to save data and move to the next step
+    pass
 
-        self.current_channel = "Cyto"
-
-        # Buttons to switch between channels
-        self.cyto_button = ttk.Button(root, text="Cyto", command=self.switch_channel("Cyto"))
-        self.nuc_button = ttk.Button(root, text="Nuc", command=self.switch_channel("Nuc"))
-        self.target_button = ttk.Button(root, text="Target", command=self.switch_channel("Target"))
-        self.cyto_button.grid(row=5, column=0)
-        self.nuc_button.grid(row=5, column=1)
-        self.target_button.grid(row=5, column=2)
-
-        # Entry widgets to display coordinates and array shape
-        self.x_coordinate_textbox = ttk.Entry(root, state="readonly")
-        self.y_coordinate_textbox = ttk.Entry(root, state="readonly")
-        self.arrayshape_textbox = ttk.Entry(root, state="readonly")
-        self.current_z_level_textbox = ttk.Entry(root, state="readonly")
-
-        self.x_coordinate_textbox.grid(row=6, column=0, columnspan=3, sticky="ew")
-        self.y_coordinate_textbox.grid(row=7, column=0, columnspan=3, sticky="ew")
-        self.arrayshape_textbox.grid(row=8, column=0, columnspan=3, sticky="ew")
-        self.current_z_level_textbox.grid(row=9, column=0, columnspan=3, sticky="ew")
-
-        # Contrast enhancement settings
-        self.ClipHighLim_cyto = ttk.Spinbox(root, from_=0, to=4500, increment=50, value=1200)
-        self.ClipLowLim_cyto = ttk.Spinbox(root, from_=0, to=4500, increment=50, value=0)
-        self.ClipHighLim_nuc = ttk.Spinbox(root, from_=0, to=4500, increment=50, value=2000)
-        self.ClipLowLim_nuc = ttk.Spinbox(root, from_=0, to=4500, increment=50, value=0)
-        self.ClipHighLim_pgp = ttk.Spinbox(root, from_=0, to=4500, increment=50, value=700)
-        self.ClipLowLim_pgp = ttk.Spinbox(root, from_=0, to=4500, increment=50, value=0)
-
-        self.ClipHighLim_cyto.grid(row=10, column=0)
-        self.ClipLowLim_cyto.grid(row=11, column=0)
-        self.ClipHighLim_nuc.grid(row=10, column=1)
-        self.ClipLowLim_nuc.grid(row=11, column=1)
-        self.ClipHighLim_pgp.grid(row=10, column=2)
-        self.ClipLowLim_pgp.grid(row=11, column=2)
-
-        self.dropdown1 = ttk.Combobox(root, values=["Rescale", "CLAHE"])
-        self.dropdown1.set("Rescale")
-        self.dropdown2 = ttk.Combobox(root, values=["Rescale", "CLAHE"])
-        self.dropdown2.set("Rescale")
-        self.dropdown3 = ttk.Combobox(root, values=["Rescale", "CLAHE"])
-        self.dropdown3.set("Rescale")
-
-        self.dropdown1.grid(row=12, column=0)
-        self.dropdown2.grid(row=12, column=1)
-        self.dropdown3.grid(row=12, column=2)
-
-        # Buttons
-        save_button = ttk.Button(root, text="Save Params", command=self.save_coords)
-        home_button = ttk.Button(root, text="Home", command=self.show_entire_image)
-
-        save_button.grid(row=13, column=0)
-        home_button.grid(row=13, column=1)
-
-    def switch_channel(self, channel):
-        def callback():
-            self.current_channel = channel
-            # Add logic to update the display based on the selected channel
-
-        return callback
-
-    def save_coords(self):
-        shape = self.arrayshape_textbox.get()
-        currentZ = self.current_z_level_textbox.get()
-        nuc_cliplow = self.ClipLowLim_nuc.get()
-        nuc_ctehmt_method = self.dropdown1.get()
-        filename = "ROI_coords_.csv"
-        headers = ["Shape", "Current Z level", "nuc clip", "nuc CE method"]
-        values = [shape, currentZ, nuc_cliplow, nuc_ctehmt_method]
-        with open(filename, mode="a", newline="") as file:
-            writer = csv.writer(file)
-            if file.tell() == 0:
-                writer.writerow(headers)
-            writer.writerow(values)
-
-    def show_entire_image(self):
-        # Add logic to show the entire image
-        pass
-
+# Create the main window
 root = tk.Tk()
-app = MainWindow(root)
+
+# Set the window title
+root.title("PathoGUI")
+
+# Set the window size
+root.geometry("800x400")
+
+# Create left and right frames
+left_frame = tk.Frame(root)
+right_frame = tk.Frame(root)
+left_frame.pack(side=tk.LEFT, padx=10, pady=10)
+right_frame.pack(side=tk.RIGHT, padx=10, pady=10)
+
+# Create a Matplotlib figure and canvas
+fig = Figure(figsize=(5, 4), dpi=100)
+canvas = FigureCanvasTkAgg(fig, master=left_frame)
+canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+# Add a subplot to the Matplotlib figure
+ax = fig.add_subplot(111)
+ax.set_title('Pathology image')
+
+# Remove axis labels
+ax.set_xticks([])
+ax.set_yticks([])
+
+# Create Label-Entry pairs
+label1 = Label(right_frame, text="x-coordinate:")
+entry1 = Entry(right_frame)
+label2 = Label(right_frame, text="y-coordinate:")
+entry2 = Entry(right_frame)
+label3 = Label(right_frame, text="annotation:")
+entry3 = Entry(right_frame)
+
+# Pack Label-Entry pairs
+label1.grid(row=0, column=0, padx=10, pady=5)
+entry1.grid(row=0, column=1, padx=10, pady=5)
+label2.grid(row=1, column=0, padx=10, pady=5)
+entry2.grid(row=1, column=1, padx=10, pady=5)
+label3.grid(row=2, column=0, padx=10, pady=5)
+entry3.grid(row=2, column=1, padx=10, pady=5)
+
+# Create Label-OptionMenu pairs
+label4 = Label(right_frame, text="Primary grade:")
+var4 = StringVar()
+options4 = ["3", "4", "5"]
+option_menu4 = OptionMenu(right_frame, var4, *options4)
+
+label5 = Label(right_frame, text="Secondary grade:")
+var5 = StringVar()
+options5 = ["3", "4", "5"]
+option_menu5 = OptionMenu(right_frame, var5, *options5)
+
+# Pack Label-OptionMenu pairs
+label4.grid(row=3, column=0, padx=10, pady=5)
+option_menu4.grid(row=3, column=1, padx=10, pady=5)
+label5.grid(row=4, column=0, padx=10, pady=5)
+option_menu5.grid(row=4, column=1, padx=10, pady=5)
+
+# Create buttons in the right frame
+clear_button = tk.Button(right_frame, text="Clear All", command=clear_all)
+clear_button.grid(row=5, column=0, columnspan=2, pady=10)
+
+save_next_button = tk.Button(right_frame, text="Save and Next", command=save_and_next)
+save_next_button.grid(row=6, column=0, columnspan=2, pady=10)
+
+# Run the Tkinter event loop
 root.mainloop()

@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import (
     QMainWindow, QApplication, QDoubleSpinBox, QGridLayout, QWidget, QPushButton,
     QLabel, QTableWidget, QTableWidgetItem, QMessageBox, QAction, QComboBox,
-    QSpacerItem, QHBoxLayout, QVBoxLayout, QGroupBox, QLineEdit, QFormLayout
-)
+    QSpacerItem, QHBoxLayout, QVBoxLayout, QGroupBox, QLineEdit, QFormLayout,
+    )
 from PyQt5.QtCore import Qt
 import numpy as np
 import matplotlib.pyplot as plt
@@ -16,8 +16,11 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-             ############# Layout #####################
-
+        ############# Layout #####################
+        # sshFile="stylesheet.css"
+        # with open(sshFile,"r") as fh:
+        #     self.setStyleSheet(fh.read())
+        
         self.setWindowTitle("PathoGUI")
 
         # Create layout for the UI

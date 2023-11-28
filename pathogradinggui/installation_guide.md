@@ -21,5 +21,5 @@ conda install pyqt=5.15.7
 
 Run: 
 ```
-conda create env create -f CSE583.yml
+conda env create -f CSE583.yml
 ```

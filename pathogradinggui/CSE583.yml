@@ -1,0 +1,11 @@
+# Run conda env create -f CSE583.yml
+
+name: CSE583
+channels:
+  - defaults
+dependencies:
+  - pandas=1.4.4
+  - matplotlib=3.5.2
+  - pyqt=5.15.7
+
+prefix: /Users/mushroom/opt/anaconda3/envs/CSE583

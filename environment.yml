@@ -4,6 +4,7 @@ name: environment
 channels:
   - defaults
 dependencies:
+  - python = 3.9.13
   - pandas=1.4.4
   - matplotlib=3.5.2
   - pyqt=5.15.7

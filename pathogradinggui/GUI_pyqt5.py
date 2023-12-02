@@ -23,7 +23,7 @@ class MainWindow(QMainWindow):
         # sshFile="stylesheet.css"
         # with open(sshFile,"r") as fh:
         #     self.setStyleSheet(fh.read())
-        
+
         self.current_user = None
         self.setWindowTitle("PathoGUI")
 

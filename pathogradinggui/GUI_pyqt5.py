@@ -9,6 +9,9 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvas, NavigationToolbar2QT as NavigationToolbar
 import pandas as pd
 import csv
+from user_auth import UserDatabase
+import sys
+from login_dialog import LoginDialog, show_login_dialog
 
 
 class MainWindow(QMainWindow):
@@ -20,7 +23,8 @@ class MainWindow(QMainWindow):
         # sshFile="stylesheet.css"
         # with open(sshFile,"r") as fh:
         #     self.setStyleSheet(fh.read())
-        
+
+        self.current_user = None
         self.setWindowTitle("PathoGUI")
 
         # Create layout for the UI
@@ -150,7 +154,18 @@ class MainWindow(QMainWindow):
 
 
 
-app = QApplication([])
-w = MainWindow()
-w.show()
-app.exec()
+if __name__ == '__main__':
+    app = QApplication([])
+
+    # Initialize the user database
+    user_db = UserDatabase()
+
+    # Show the login dialog
+    current_user = show_login_dialog(user_db, MainWindow)
+
+    # Now, only if authentication is successful, create and show the main window
+    if current_user:
+        w = MainWindow()
+        w.current_user = current_user  # Set the current user
+        w.show()
+        sys.exit(app.exec_())

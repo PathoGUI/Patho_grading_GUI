@@ -5,7 +5,11 @@ from secrets import token_bytes
 
 class UserDatabase:
     def __init__(self, db_name='user_database.db'):
-        self.connection = sqlite3.connect(db_name)
+        # Specify the path for the database file
+        db_path = os.path.join('pathogradinggui', 'users', db_name)
+        abs_db_path = os.path.abspath(db_path)
+
+        self.connection = sqlite3.connect(db_path)
         self.cursor = self.connection.cursor()
         self.create_table()
 

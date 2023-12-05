@@ -90,7 +90,7 @@ class LoginDialog(QDialog):
         self.setWindowTitle("Login")
         self.setGeometry(300, 300, 300, 150)
 
-        self.username_label = ('Username:')
+        self.username_label = QLabel('Username:')
         self.username_input = QLineEdit()
 
         self.password_label = QLabel('Password:')

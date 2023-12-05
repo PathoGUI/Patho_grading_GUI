@@ -1,3 +1,4 @@
+import csv
 from PyQt5.QtWidgets import (
     QMainWindow, QApplication, QDoubleSpinBox, QGridLayout, QWidget, QPushButton,
     QLabel, QTableWidget, QTableWidgetItem, QMessageBox, QAction, QComboBox,
@@ -10,7 +11,6 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from matplotlib.backends.backend_qt5agg import FigureCanvas, NavigationToolbar2QT as NavigationToolbar
 import pandas as pd
-import csv
 from user_auth import UserDatabase
 import sys
 import os
@@ -19,10 +19,10 @@ import time
 
 
 class MainWindow(QMainWindow):
-
+    """Main window for the application."""
     def __init__(self):
         super().__init__()
-
+        """Initialize the main window."""
         ############# Layout #####################
         # sshFile="stylesheet.css"
         # with open(sshFile,"r") as fh:
@@ -37,8 +37,10 @@ class MainWindow(QMainWindow):
         self.canvas = None
         self.figure = Figure(figsize=(5, 4), dpi=100)
         self.canvas = FigureCanvas(self.figure)
+
         self.toolbar = NavigationToolbar(self.canvas, self)   
         self.load_image() 
+
 
         # Create layout for the UI
         main_layout = QHBoxLayout()
@@ -116,7 +118,6 @@ class MainWindow(QMainWindow):
 
         ############# End of Layout ######################################
 
-
     """
     Backend functions: 
         - save_coords(): 
@@ -162,10 +163,10 @@ class MainWindow(QMainWindow):
 
         time.sleep(0.5)
         self.hide_text()
-        
+
 
     def load_image(self):
-        # Load and display the current image
+        """Load and display the current image."""
         if 0 <= self.image_index < len(self.image_paths):
             image_name = self.image_paths[self.image_index]
             img = mpimg.imread('../Data/' + image_name)
@@ -179,13 +180,13 @@ class MainWindow(QMainWindow):
             self.canvas.draw_idle()
 
     def previous_image(self):
-        # Show the previous image
+        """Show the previous image."""
         if self.image_index > 0:
             self.image_index -= 1
             self.load_image()
 
     def next_image(self):
-        # Show the next image
+        """Show the next image."""
         if self.image_index < len(self.image_paths) - 1:
             self.image_index += 1
             self.load_image()

@@ -32,7 +32,12 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("PathoGUI")
 
         # Load images and initialize image index
-        self.image_paths = os.listdir("../Data")
+        """ Select only image file starts with 'S' and ends with '.tif' to prevent error"""
+        image_path_list = []
+        for element in os.listdir("../Data"):
+            if element.startswith("S") and element.endswith('.tif'):
+                image_path_list.append(element)
+        self.image_paths = image_path_list
         self.image_index = 0
         self.canvas = None
         self.figure = Figure(figsize=(5, 4), dpi=100)
@@ -190,6 +195,8 @@ class MainWindow(QMainWindow):
         if self.image_index < len(self.image_paths) - 1:
             self.image_index += 1
             self.load_image()
+
+
 
 if __name__ == '__main__':
     app = QApplication([])

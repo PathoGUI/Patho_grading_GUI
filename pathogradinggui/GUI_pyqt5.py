@@ -15,6 +15,7 @@ from user_auth import UserDatabase
 import sys
 import os
 from login_dialog import LoginDialog, show_login_dialog
+import time
 
 
 class MainWindow(QMainWindow):
@@ -30,20 +31,24 @@ class MainWindow(QMainWindow):
         self.current_user = None
         self.setWindowTitle("PathoGUI")
 
-        # Create layout for the UI
-        main_layout = QHBoxLayout()
-        left_layout = QVBoxLayout()
-        right_layout = QVBoxLayout()
-
         # Load images and initialize image index
         self.image_paths = os.listdir("../Data")
         self.image_index = 0
         self.canvas = None
         self.figure = Figure(figsize=(5, 4), dpi=100)
         self.canvas = FigureCanvas(self.figure)
-        self.toolbar = NavigationToolbar(self.canvas, self)
 
-        self.load_image()
+        self.toolbar = NavigationToolbar(self.canvas, self)   
+        self.load_image() 
+
+
+        # Create layout for the UI
+        main_layout = QHBoxLayout()
+        left_layout = QVBoxLayout()
+        right_layout = QVBoxLayout()
+
+        # Add loading label
+        self.loading_label = QLabel()
 
         # Add x,y,z coordinate display
         self.x_coordinate_textbox = QLineEdit()
@@ -55,29 +60,27 @@ class MainWindow(QMainWindow):
         form_layout = QFormLayout()
         form_layout.addRow("x-coordinate:", self.x_coordinate_textbox)
         form_layout.addRow("y-coordinate:", self.y_coordinate_textbox)
-        form_layout.addRow("Annotation:", self.arrayshape_textbox)
+        form_layout.addRow("Comments:", self.arrayshape_textbox)
         coordinates_container = QGroupBox("Coordinates")
         coordinates_container.setLayout(form_layout)
 
-        # Add Contrast enhancement for cyto channel
-        self.default_cyto_clip_lower = 0
-        self.default_cyto_clip_higher = 1200
-        dropdown_layout1 = QVBoxLayout()
-        dropdown_layout1.addWidget(QLabel("Primary grade:"))
+        # Add Primary and Secondary grades dropdown manual
+        dropdown_layout = QVBoxLayout()
+        dropdown_layout.addWidget(QLabel("Primary grade:"))
         self.dropdown1 = QComboBox()
         self.dropdown1.addItem("3")
         self.dropdown1.addItem("4")
         self.dropdown1.addItem("5")
-        dropdown_layout1.addWidget(self.dropdown1)
-        dropdown_layout1.addWidget(QLabel("Secondary grade:"))
-        self.dropdown1 = QComboBox()
-        self.dropdown1.addItem("3")
-        self.dropdown1.addItem("4")
-        self.dropdown1.addItem("5")
-        dropdown_layout1.addWidget(self.dropdown1)
+        dropdown_layout.addWidget(self.dropdown1)
+        dropdown_layout.addWidget(QLabel("Secondary grade:"))
+        self.dropdown2 = QComboBox()
+        self.dropdown2.addItem("3")
+        self.dropdown2.addItem("4")
+        self.dropdown2.addItem("5")
+        dropdown_layout.addWidget(self.dropdown2)
 
         dropdown_container1 = QGroupBox("Grading")
-        dropdown_container1.setLayout(dropdown_layout1)
+        dropdown_container1.setLayout(dropdown_layout)
         # Create "Previous" and "Next" buttons
         previous_button = QPushButton("Previous")
         next_button = QPushButton("Next")
@@ -86,7 +89,8 @@ class MainWindow(QMainWindow):
         previous_button.clicked.connect(self.previous_image)
         next_button.clicked.connect(self.next_image)
         # Button to save all the settings
-        save_button = QPushButton("Save and Next")
+        save_button = QPushButton("Save")
+        save_button.setStyleSheet("QPushButton { background-color: green; color: white; padding: 5px; font-weight: bold; }")
         save_button.clicked.connect(self.save_coords)
         # Home button to show the entire image
         home_button = QPushButton("Clear all")
@@ -100,6 +104,7 @@ class MainWindow(QMainWindow):
         # Configure left layout and right layout and make it central
         left_layout.addWidget(self.canvas)
         left_layout.addWidget(self.toolbar)
+        right_layout.addWidget(self.loading_label)
         right_layout.addWidget(coordinates_container)
         right_layout.addWidget(dropdown_container1)
         right_layout.addLayout(button_layout)
@@ -113,61 +118,52 @@ class MainWindow(QMainWindow):
 
         ############# End of Layout ######################################
 
-    
+    """
+    Backend functions: 
+        - save_coords(): 
+        - load_image():
+        - previous_image():
+        - next_image():
+
+    """
+    def show_saving(self):
+        self.loading_label.setText("Saving...")
+        self.loading_label.setStyleSheet("color: green;")
+        QApplication.processEvents()
+
+
+    def hide_text(self):
+        self.loading_label.clear()
+        QApplication.processEvents()
+
 
     def save_coords(self):
-        """Save the coordinates to a CSV file."""
-        # Retrieve values for shapes and current z level
-        shape = self.arrayshape_textbox.text()
-        current_z = self.current_z_level_textbox.text()
+        """
+        This function..
+        - retrieves all the values to be saved
+        - write it into a .csv file when "Save" button is clicked
+        """
+        self.show_saving()
 
-        # Retrieve values from clipvalues
-        nuc_cliplow = self.clip_higher_limit1.value()
-        # nuc_cliphigh =
-        # cyto_cliplow =
-        # cyto_cliphigh =
-        # pgp_cliplow =
-        # pgp_cliphigh =
+        PrimaryGrade = self.dropdown1.currentText()
+        SecondaryGrade = self.dropdown2.currentText()
 
-        # Retrieve method used for contrast enhancement
-        nuc_ctehmt_method = self.dropdown1.currentText()
-        # cyto_ctehmt_method =
-        # pgp_ctehmt_method =
+        headers = ["PrimaryGrade", "SecondaryGrade"]
+        values =  [PrimaryGrade, SecondaryGrade]
 
-
-        filename = "ROI_coords_.csv"
-        headers = ["Shape", "Current Z level", "nuc clip","nuc CE method"]
-        values = [shape, current_z, nuc_cliplow, nuc_ctehmt_method]
+        root_folder = "./Results"
+        if not os.path.exists(root_folder):
+            os.mkdir(root_folder)
+        filename = root_folder + os.sep + "Grading_result" + ".csv"
         with open(filename, mode="a", newline="") as file:
             writer = csv.writer(file)
             if file.tell() == 0:
                 writer.writerow(headers)
             writer.writerow(values)
 
-        # # Create a dictionary to store the values
-        # data = {
-        #     'LineEditValue1': [shape],
-        #     'LineEditValue2': [current_z],
-        #     # ... add more key-value pairs for other widgets
-        # }
+        time.sleep(0.5)
+        self.hide_text()
 
-        # # Convert the data dictionary to a pandas DataFrame
-        # df = pd.DataFrame(data)
-
-        # # Check if the Excel file already exists
-        # try:
-        #     # Load the existing file and append the DataFrame to it
-        #     book = load_workbook('settings.xlsx')
-        #     writer = pd.ExcelWriter('settings.xlsx', engine='openpyxl')
-        #     writer.book = book
-        #     writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
-        #     startrow = writer.sheets['Sheet1'].max_row
-        #     df.to_excel(writer, sheet_name='Sheet1', startrow=startrow, index=False, header=False)
-        #     writer.save()
-        #     writer.close()
-        # except FileNotFoundError:
-        #     # If the file doesn't exist, create a new one with the DataFrame
-        #     df.to_excel('settings.xlsx', index=False)
 
     def load_image(self):
         """Load and display the current image."""

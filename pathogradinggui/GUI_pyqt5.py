@@ -1,3 +1,4 @@
+import csv
 from PyQt5.QtWidgets import (
     QMainWindow, QApplication, QDoubleSpinBox, QGridLayout, QWidget, QPushButton,
     QLabel, QTableWidget, QTableWidgetItem, QMessageBox, QAction, QComboBox,
@@ -10,7 +11,6 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from matplotlib.backends.backend_qt5agg import FigureCanvas, NavigationToolbar2QT as NavigationToolbar
 import pandas as pd
-import csv
 from user_auth import UserDatabase
 import sys
 import os
@@ -18,10 +18,10 @@ from login_dialog import LoginDialog, show_login_dialog
 
 
 class MainWindow(QMainWindow):
-
+    """Main window for the application."""
     def __init__(self):
         super().__init__()
-
+        """Initialize the main window."""
         ############# Layout #####################
         # sshFile="stylesheet.css"
         # with open(sshFile,"r") as fh:
@@ -41,9 +41,9 @@ class MainWindow(QMainWindow):
         self.canvas = None
         self.figure = Figure(figsize=(5, 4), dpi=100)
         self.canvas = FigureCanvas(self.figure)
-        self.toolbar = NavigationToolbar(self.canvas, self)   
+        self.toolbar = NavigationToolbar(self.canvas, self)
 
-        self.load_image() 
+        self.load_image()
 
         # Add x,y,z coordinate display
         self.x_coordinate_textbox = QLineEdit()
@@ -113,30 +113,31 @@ class MainWindow(QMainWindow):
 
         ############# End of Layout ######################################
 
-        
+    
 
     def save_coords(self):
+        """Save the coordinates to a CSV file."""
         # Retrieve values for shapes and current z level
         shape = self.arrayshape_textbox.text()
-        currentZ = self.current_z_level_textbox.text()
+        current_z = self.current_z_level_textbox.text()
 
         # Retrieve values from clipvalues
         nuc_cliplow = self.clip_higher_limit1.value()
-        # nuc_cliphigh = 
-        # cyto_cliplow = 
-        # cyto_cliphigh = 
-        # pgp_cliplow = 
-        # pgp_cliphigh = 
+        # nuc_cliphigh =
+        # cyto_cliplow =
+        # cyto_cliphigh =
+        # pgp_cliplow =
+        # pgp_cliphigh =
 
         # Retrieve method used for contrast enhancement
         nuc_ctehmt_method = self.dropdown1.currentText()
-        # cyto_ctehmt_method = 
-        # pgp_ctehmt_method = 
+        # cyto_ctehmt_method =
+        # pgp_ctehmt_method =
 
 
         filename = "ROI_coords_.csv"
         headers = ["Shape", "Current Z level", "nuc clip","nuc CE method"]
-        values = [shape, currentZ, nuc_cliplow, nuc_ctehmt_method]
+        values = [shape, current_z, nuc_cliplow, nuc_ctehmt_method]
         with open(filename, mode="a", newline="") as file:
             writer = csv.writer(file)
             if file.tell() == 0:
@@ -146,7 +147,7 @@ class MainWindow(QMainWindow):
         # # Create a dictionary to store the values
         # data = {
         #     'LineEditValue1': [shape],
-        #     'LineEditValue2': [currentZ],
+        #     'LineEditValue2': [current_z],
         #     # ... add more key-value pairs for other widgets
         # }
 
@@ -169,7 +170,7 @@ class MainWindow(QMainWindow):
         #     df.to_excel('settings.xlsx', index=False)
 
     def load_image(self):
-        # Load and display the current image
+        """Load and display the current image."""
         if 0 <= self.image_index < len(self.image_paths):
             image_name = self.image_paths[self.image_index]
             img = mpimg.imread('../Data/' + image_name)
@@ -183,13 +184,13 @@ class MainWindow(QMainWindow):
             self.canvas.draw_idle()
 
     def previous_image(self):
-        # Show the previous image
+        """Show the previous image."""
         if self.image_index > 0:
             self.image_index -= 1
             self.load_image()
 
     def next_image(self):
-        # Show the next image
+        """Show the next image."""
         if self.image_index < len(self.image_paths) - 1:
             self.image_index += 1
             self.load_image()

@@ -4,13 +4,16 @@ from PyQt5.QtWidgets import (
     QSpacerItem, QHBoxLayout, QVBoxLayout, QGroupBox, QLineEdit, QFormLayout,
     )
 from PyQt5.QtCore import Qt
+from matplotlib.figure import Figure
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 from matplotlib.backends.backend_qt5agg import FigureCanvas, NavigationToolbar2QT as NavigationToolbar
 import pandas as pd
 import csv
 from user_auth import UserDatabase
 import sys
+import os
 from login_dialog import LoginDialog, show_login_dialog
 
 
@@ -32,10 +35,15 @@ class MainWindow(QMainWindow):
         left_layout = QVBoxLayout()
         right_layout = QVBoxLayout()
 
-        # Create a matplotlib figure
-        self.figure = plt.figure()
+        # Load images and initialize image index
+        self.image_paths = os.listdir("../Data")
+        self.image_index = 0
+        self.canvas = None
+        self.figure = Figure(figsize=(5, 4), dpi=100)
         self.canvas = FigureCanvas(self.figure)
-        self.toolbar = NavigationToolbar(self.canvas, self)        
+        self.toolbar = NavigationToolbar(self.canvas, self)   
+
+        self.load_image() 
 
         # Add x,y,z coordinate display
         self.x_coordinate_textbox = QLineEdit()
@@ -70,7 +78,13 @@ class MainWindow(QMainWindow):
 
         dropdown_container1 = QGroupBox("Grading")
         dropdown_container1.setLayout(dropdown_layout1)
+        # Create "Previous" and "Next" buttons
+        previous_button = QPushButton("Previous")
+        next_button = QPushButton("Next")
 
+        # Connect button clicks to navigation methods
+        previous_button.clicked.connect(self.previous_image)
+        next_button.clicked.connect(self.next_image)
         # Button to save all the settings
         save_button = QPushButton("Save and Next")
         save_button.clicked.connect(self.save_coords)
@@ -79,6 +93,8 @@ class MainWindow(QMainWindow):
         button_layout = QHBoxLayout()
         button_layout.addWidget(home_button)
         button_layout.addWidget(save_button)
+        button_layout.addWidget(previous_button)
+        button_layout.addWidget(next_button)
         button_layout.addStretch()
 
         # Configure left layout and right layout and make it central
@@ -152,7 +168,31 @@ class MainWindow(QMainWindow):
         #     # If the file doesn't exist, create a new one with the DataFrame
         #     df.to_excel('settings.xlsx', index=False)
 
+    def load_image(self):
+        # Load and display the current image
+        if 0 <= self.image_index < len(self.image_paths):
+            image_name = self.image_paths[self.image_index]
+            img = mpimg.imread('../Data/' + image_name)
 
+            # Clear the existing axes
+            self.figure.clear()
+            self.ax = self.figure.add_subplot(1, 1, 1)
+            self.ax.imshow(img)
+            self.ax.set_title(image_name)
+
+            self.canvas.draw_idle()
+
+    def previous_image(self):
+        # Show the previous image
+        if self.image_index > 0:
+            self.image_index -= 1
+            self.load_image()
+
+    def next_image(self):
+        # Show the next image
+        if self.image_index < len(self.image_paths) - 1:
+            self.image_index += 1
+            self.load_image()
 
 if __name__ == '__main__':
     app = QApplication([])

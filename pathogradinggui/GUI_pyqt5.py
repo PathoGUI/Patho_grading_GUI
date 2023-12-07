@@ -45,9 +45,9 @@ class MainWindow(QMainWindow):
         self.canvas = None
         self.figure = Figure(figsize=(5, 4), dpi=100)
         self.canvas = FigureCanvas(self.figure)
+        self.canvas.mpl_connect('button_release_event', self.on_zoom_completed)
 
-        self.toolbar = NavigationToolbar(self.canvas, self)   
-        self.load_image() 
+        self.toolbar = NavigationToolbar(self.canvas, self) 
 
 
         ######################## UI Layout ##################################
@@ -134,6 +134,8 @@ class MainWindow(QMainWindow):
 
         self.cid = None
 
+        self.load_image() 
+
         ############# End of Layout ######################################
 
     """
@@ -144,6 +146,33 @@ class MainWindow(QMainWindow):
         - next_image():
 
     """
+
+    def on_zoom_completed(self, event):
+        if event.name == 'button_release_event':
+            self.figure.canvas.mpl_disconnect(self.cid)
+            self.cid = self.figure.canvas.mpl_connect('draw_event', self.on_draw_completed)
+
+
+    def on_draw_completed(self, event):
+        self.figure.canvas.mpl_disconnect(self.cid)
+        ax = self.figure.gca()
+        x_limits = self.x_limits
+        y_limits = self.y_limits
+        if ax:
+            # Don't let it pan out of bound
+            x_limits = ax.get_xlim()
+            y_limits = ax.get_ylim()
+
+        self.x_limits = x_limits
+        self.y_limits = y_limits
+
+        self.x_coordinate_textbox.setText(str(format(self.x_limits[0],".3f")))
+        self.y_coordinate_textbox.setText(str(format(self.y_limits[1],".3f")))
+
+        self.x_coordinate_textbox.update()
+        self.y_coordinate_textbox.update()
+
+
     def show_saving(self):
         self.loading_label.setText("Saving...")
         self.loading_label.setStyleSheet("color: green;")
@@ -165,12 +194,14 @@ class MainWindow(QMainWindow):
 
         PrimaryGrade   = self.dropdown1.currentText()
         SecondaryGrade = self.dropdown2.currentText()
+        x_coord    = self.x_coordinate_textbox.text()
+        y_coord    = self.y_coordinate_textbox.text()
         image_name     = self.image_name
         user_name      = self.user_name.text()
         dt             = str(datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
 
-        headers = ["Date&Time", "User", "Image name", "PrimaryGrade", "SecondaryGrade"]
-        values =  [dt, user_name, image_name, PrimaryGrade, SecondaryGrade]
+        headers = ["Date&Time", "User", "Image name", "PrimaryGrade", "SecondaryGrade", "xcoord", "ycoord"]
+        values =  [dt, user_name, image_name, PrimaryGrade, SecondaryGrade, x_coord, y_coord]
 
         root_folder = "./Results"
         if not os.path.exists(root_folder):
@@ -191,14 +222,22 @@ class MainWindow(QMainWindow):
             self.image_name = self.image_paths[self.image_index]
             img = mpimg.imread('../Data/' + self.image_name)
 
+            img_title = "Biopsy name: " + self.image_name.split(".tif")[0]
+
             # Clear the existing axes
             self.figure.clear()
             self.ax = self.figure.add_subplot(1, 1, 1)
             self.ax.imshow(img)
-            self.ax.set_title(self.image_name)
+            self.ax.set_title(img_title)
+            self.ax.spines['right'].set_visible(False)
+            self.ax.spines['top'].set_visible(False)
             ax = self.figure.gca()
             self.x_limits = ax.get_xlim()
             self.y_limits = ax.get_ylim()
+            self.x_coordinate_textbox.setText(str(format(self.x_limits[0],".3f")))
+            self.y_coordinate_textbox.setText(str(format(self.y_limits[1],".3f")))
+            self.x_coordinate_textbox.update()
+            self.y_coordinate_textbox.update()
 
             self.canvas.draw_idle()
 
@@ -208,6 +247,7 @@ class MainWindow(QMainWindow):
         if self.image_index > 0:
             self.image_index -= 1
             self.load_image()
+            self.comment_textbox.clear()
 
     def next_image(self):
         """Show the next image."""
@@ -215,6 +255,7 @@ class MainWindow(QMainWindow):
         if self.image_index < len(self.image_paths) - 1:
             self.image_index += 1
             self.load_image()
+            self.comment_textbox.clear()
 
     def clear_input(self):
         """Clear input"""

@@ -83,12 +83,14 @@ class MainWindow(QMainWindow):
         dropdown_layout = QVBoxLayout()
         dropdown_layout.addWidget(QLabel("Primary grade:"))
         self.dropdown1 = QComboBox()
+        self.dropdown1.addItem(" ")
         self.dropdown1.addItem("3")
         self.dropdown1.addItem("4")
         self.dropdown1.addItem("5")
         dropdown_layout.addWidget(self.dropdown1)
         dropdown_layout.addWidget(QLabel("Secondary grade:"))
         self.dropdown2 = QComboBox()
+        self.dropdown2.addItem(" ")
         self.dropdown2.addItem("3")
         self.dropdown2.addItem("4")
         self.dropdown2.addItem("5")
@@ -105,10 +107,11 @@ class MainWindow(QMainWindow):
         save_button = QPushButton("Save")
         save_button.setStyleSheet("QPushButton {background-color: green; color: white; }")
         save_button.clicked.connect(self.save_coords)
-        # Home button to show the entire image
-        home_button = QPushButton("Clear all")
+        # Clear button to clear all input
+        clear_button = QPushButton("Clear all")
+        clear_button.clicked.connect(self.clear_input)
         button_layout = QHBoxLayout()
-        button_layout.addWidget(home_button)
+        button_layout.addWidget(clear_button)
         button_layout.addWidget(previous_button)
         button_layout.addWidget(next_button)
         button_layout.addStretch()
@@ -182,7 +185,6 @@ class MainWindow(QMainWindow):
         time.sleep(0.5)
         self.hide_text()
 
-
     def load_image(self):
         """Load and display the current image."""
         if 0 <= self.image_index < len(self.image_paths):
@@ -202,17 +204,23 @@ class MainWindow(QMainWindow):
 
     def previous_image(self):
         """Show the previous image."""
+        self.clear_input()
         if self.image_index > 0:
             self.image_index -= 1
             self.load_image()
 
     def next_image(self):
         """Show the next image."""
+        self.clear_input()
         if self.image_index < len(self.image_paths) - 1:
             self.image_index += 1
             self.load_image()
 
-
+    def clear_input(self):
+        """Clear input"""
+        self.comment_textbox.clear()
+        self.dropdown1.setCurrentText(" ")
+        self.dropdown2.setCurrentText(" ")
 
 if __name__ == '__main__':
     app = QApplication([])

@@ -34,7 +34,13 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("PathoGUI")
 
         # Load images and initialize image index
-        self.image_paths = os.listdir("../Data")
+        """ Select only image file starts with 'S' and ends with '.tif' to prevent error"""
+
+        image_path_list = []
+        for element in os.listdir("../Data"):
+            if element.startswith("S") and element.endswith('.tif'):
+                image_path_list.append(element)
+        self.image_paths = image_path_list
         self.image_index = 0
         self.canvas = None
         self.figure = Figure(figsize=(5, 4), dpi=100)
@@ -77,12 +83,14 @@ class MainWindow(QMainWindow):
         dropdown_layout = QVBoxLayout()
         dropdown_layout.addWidget(QLabel("Primary grade:"))
         self.dropdown1 = QComboBox()
+        self.dropdown1.addItem(" ")
         self.dropdown1.addItem("3")
         self.dropdown1.addItem("4")
         self.dropdown1.addItem("5")
         dropdown_layout.addWidget(self.dropdown1)
         dropdown_layout.addWidget(QLabel("Secondary grade:"))
         self.dropdown2 = QComboBox()
+        self.dropdown2.addItem(" ")
         self.dropdown2.addItem("3")
         self.dropdown2.addItem("4")
         self.dropdown2.addItem("5")
@@ -99,10 +107,11 @@ class MainWindow(QMainWindow):
         save_button = QPushButton("Save")
         save_button.setStyleSheet("QPushButton {background-color: green; color: white; }")
         save_button.clicked.connect(self.save_coords)
-        # Home button to show the entire image
-        home_button = QPushButton("Clear all")
+        # Clear button to clear all input
+        clear_button = QPushButton("Clear all")
+        clear_button.clicked.connect(self.clear_input)
         button_layout = QHBoxLayout()
-        button_layout.addWidget(home_button)
+        button_layout.addWidget(clear_button)
         button_layout.addWidget(previous_button)
         button_layout.addWidget(next_button)
         button_layout.addStretch()
@@ -207,7 +216,6 @@ class MainWindow(QMainWindow):
         time.sleep(0.5)
         self.hide_text()
 
-
     def load_image(self):
         """Load and display the current image."""
         if 0 <= self.image_index < len(self.image_paths):
@@ -235,6 +243,7 @@ class MainWindow(QMainWindow):
 
     def previous_image(self):
         """Show the previous image."""
+        self.clear_input()
         if self.image_index > 0:
             self.image_index -= 1
             self.load_image()
@@ -242,10 +251,17 @@ class MainWindow(QMainWindow):
 
     def next_image(self):
         """Show the next image."""
+        self.clear_input()
         if self.image_index < len(self.image_paths) - 1:
             self.image_index += 1
             self.load_image()
             self.comment_textbox.clear()
+
+    def clear_input(self):
+        """Clear input"""
+        self.comment_textbox.clear()
+        self.dropdown1.setCurrentText(" ")
+        self.dropdown2.setCurrentText(" ")
 
 if __name__ == '__main__':
     app = QApplication([])

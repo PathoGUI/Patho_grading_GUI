@@ -16,14 +16,16 @@ import sys
 import os
 from login_dialog import LoginDialog, show_login_dialog
 import time
+import datetime
 
 
 class MainWindow(QMainWindow):
     """Main window for the application."""
-    def __init__(self):
+    def __init__(self, current_user):
         super().__init__()
+
         """Initialize the main window."""
-        ############# Layout #####################
+        
         # sshFile="stylesheet.css"
         # with open(sshFile,"r") as fh:
         #     self.setStyleSheet(fh.read())
@@ -42,25 +44,32 @@ class MainWindow(QMainWindow):
         self.load_image() 
 
 
-        # Create layout for the UI
+        ######################## UI Layout ##################################
         main_layout = QHBoxLayout()
         left_layout = QVBoxLayout()
         right_layout = QVBoxLayout()
 
-        # Add loading label
+        # Add user name display, loading label
+        self.user_name = QLineEdit()
+        self.user_name.setReadOnly(True)
+        self.user_name.setStyleSheet("background-color: #f0f0f0;")
+        self.user_name.setText(current_user)        
+        self.form_layout_0 = QFormLayout()
+        self.form_layout_0.addRow("Logged in as:", self.user_name)
         self.loading_label = QLabel()
 
         # Add x,y,z coordinate display
         self.x_coordinate_textbox = QLineEdit()
         self.x_coordinate_textbox.setReadOnly(True)
+        self.x_coordinate_textbox.setStyleSheet("background-color: #f0f0f0;")
         self.y_coordinate_textbox = QLineEdit()
         self.y_coordinate_textbox.setReadOnly(True)
-        self.arrayshape_textbox = QLineEdit()
-        self.arrayshape_textbox.setReadOnly(True)
+        self.y_coordinate_textbox.setStyleSheet("background-color: #f0f0f0;")
+        self.comment_textbox = QLineEdit()
         form_layout = QFormLayout()
         form_layout.addRow("x-coordinate:", self.x_coordinate_textbox)
         form_layout.addRow("y-coordinate:", self.y_coordinate_textbox)
-        form_layout.addRow("Comments:", self.arrayshape_textbox)
+        form_layout.addRow("Comments:", self.comment_textbox)
         coordinates_container = QGroupBox("Coordinates")
         coordinates_container.setLayout(form_layout)
 
@@ -78,35 +87,35 @@ class MainWindow(QMainWindow):
         self.dropdown2.addItem("4")
         self.dropdown2.addItem("5")
         dropdown_layout.addWidget(self.dropdown2)
+        dropdown_container = QGroupBox("Grading")
+        dropdown_container.setLayout(dropdown_layout)
 
-        dropdown_container1 = QGroupBox("Grading")
-        dropdown_container1.setLayout(dropdown_layout)
         # Create "Previous" and "Next" buttons
         previous_button = QPushButton("Previous")
-        next_button = QPushButton("Next")
-
-        # Connect button clicks to navigation methods
         previous_button.clicked.connect(self.previous_image)
+        next_button = QPushButton("Next")
         next_button.clicked.connect(self.next_image)
         # Button to save all the settings
         save_button = QPushButton("Save")
-        save_button.setStyleSheet("QPushButton { background-color: green; color: white; padding: 5px; font-weight: bold; }")
+        save_button.setStyleSheet("QPushButton {background-color: green; color: white; }")
         save_button.clicked.connect(self.save_coords)
         # Home button to show the entire image
         home_button = QPushButton("Clear all")
         button_layout = QHBoxLayout()
         button_layout.addWidget(home_button)
-        button_layout.addWidget(save_button)
         button_layout.addWidget(previous_button)
         button_layout.addWidget(next_button)
         button_layout.addStretch()
+        button_layout.addWidget(save_button)
+        
 
         # Configure left layout and right layout and make it central
         left_layout.addWidget(self.canvas)
         left_layout.addWidget(self.toolbar)
+        right_layout.addLayout(self.form_layout_0)
         right_layout.addWidget(self.loading_label)
         right_layout.addWidget(coordinates_container)
-        right_layout.addWidget(dropdown_container1)
+        right_layout.addWidget(dropdown_container)
         right_layout.addLayout(button_layout)
         main_layout.addLayout(left_layout)
         main_layout.addLayout(right_layout)
@@ -145,16 +154,19 @@ class MainWindow(QMainWindow):
         """
         self.show_saving()
 
-        PrimaryGrade = self.dropdown1.currentText()
+        PrimaryGrade   = self.dropdown1.currentText()
         SecondaryGrade = self.dropdown2.currentText()
+        image_name     = self.image_name
+        user_name      = self.user_name.text()
+        dt             = str(datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
 
-        headers = ["PrimaryGrade", "SecondaryGrade"]
-        values =  [PrimaryGrade, SecondaryGrade]
+        headers = ["Date&Time", "User", "Image name", "PrimaryGrade", "SecondaryGrade"]
+        values =  [dt, user_name, image_name, PrimaryGrade, SecondaryGrade]
 
         root_folder = "./Results"
         if not os.path.exists(root_folder):
             os.mkdir(root_folder)
-        filename = root_folder + os.sep + "Grading_result" + ".csv"
+        filename = root_folder + os.sep + "Grading_result_" + self.user_name.text() + ".csv"
         with open(filename, mode="a", newline="") as file:
             writer = csv.writer(file)
             if file.tell() == 0:
@@ -168,14 +180,17 @@ class MainWindow(QMainWindow):
     def load_image(self):
         """Load and display the current image."""
         if 0 <= self.image_index < len(self.image_paths):
-            image_name = self.image_paths[self.image_index]
-            img = mpimg.imread('../Data/' + image_name)
+            self.image_name = self.image_paths[self.image_index]
+            img = mpimg.imread('../Data/' + self.image_name)
 
             # Clear the existing axes
             self.figure.clear()
             self.ax = self.figure.add_subplot(1, 1, 1)
             self.ax.imshow(img)
-            self.ax.set_title(image_name)
+            self.ax.set_title(self.image_name)
+            ax = self.figure.gca()
+            self.x_limits = ax.get_xlim()
+            self.y_limits = ax.get_ylim()
 
             self.canvas.draw_idle()
 
@@ -202,7 +217,7 @@ if __name__ == '__main__':
 
     # Now, only if authentication is successful, create and show the main window
     if current_user:
-        w = MainWindow()
+        w = MainWindow(current_user)
         w.current_user = current_user  # Set the current user
         w.show()
         sys.exit(app.exec_())

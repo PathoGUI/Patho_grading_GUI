@@ -1,41 +1,31 @@
-import csv
-from PyQt5.QtWidgets import (
-    QMainWindow, QApplication, QDoubleSpinBox, QGridLayout, QWidget, QPushButton,
-    QLabel, QTableWidget, QTableWidgetItem, QMessageBox, QAction, QComboBox,
-    QSpacerItem, QHBoxLayout, QVBoxLayout, QGroupBox, QLineEdit, QFormLayout,
-    )
-from PyQt5.QtCore import Qt
-from matplotlib.figure import Figure
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-from matplotlib.backends.backend_qt5agg import FigureCanvas, NavigationToolbar2QT as NavigationToolbar
-import pandas as pd
-from user_auth import UserDatabase
+""" Module providing a function creating CSV file"""
 import sys
 import os
-from login_dialog import LoginDialog, show_login_dialog
+import csv
 import time
 import datetime
+import matplotlib.image as mpimg
 
+from PyQt5.QtWidgets import (
+    QMainWindow, QApplication, QWidget, QPushButton,
+    QLabel,QComboBox,
+    QHBoxLayout, QVBoxLayout, QGroupBox, QLineEdit, QFormLayout,
+    )
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_qt5agg import (FigureCanvas,
+                                                NavigationToolbar2QT as NavigationToolbar)
+from user_auth import UserDatabase
+from login_dialog import LoginDialog, show_login_dialog
 
 class MainWindow(QMainWindow):
     """Main window for the application."""
     def __init__(self, current_user):
-        super().__init__()
-
         """Initialize the main window."""
-        
-        # sshFile="stylesheet.css"
-        # with open(sshFile,"r") as fh:
-        #     self.setStyleSheet(fh.read())
-
+        super().__init__()
         self.current_user = None
         self.setWindowTitle("PathoGUI")
 
         # Load images and initialize image index
-        """ Select only image file starts with 'S' and ends with '.tif' to prevent error"""
-
         image_path_list = []
         for element in os.listdir("../Data"):
             if element.startswith("S") and element.endswith('.tif'):
@@ -47,8 +37,7 @@ class MainWindow(QMainWindow):
         self.canvas = FigureCanvas(self.figure)
         self.canvas.mpl_connect('button_release_event', self.on_zoom_completed)
 
-        self.toolbar = NavigationToolbar(self.canvas, self) 
-
+        self.toolbar = NavigationToolbar(self.canvas, self)
 
         ######################## UI Layout ##################################
         main_layout = QHBoxLayout()
@@ -59,7 +48,7 @@ class MainWindow(QMainWindow):
         self.user_name = QLineEdit()
         self.user_name.setReadOnly(True)
         self.user_name.setStyleSheet("background-color: #f0f0f0;")
-        self.user_name.setText(current_user)        
+        self.user_name.setText(current_user)
         self.form_layout_0 = QFormLayout()
         self.form_layout_0.addRow("Logged in as:", self.user_name)
         self.loading_label = QLabel()
@@ -116,7 +105,7 @@ class MainWindow(QMainWindow):
         button_layout.addWidget(next_button)
         button_layout.addStretch()
         button_layout.addWidget(save_button)
-        
+
 
         # Configure left layout and right layout and make it central
         left_layout.addWidget(self.canvas)
@@ -133,35 +122,26 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(central_widget)
 
         self.cid = None
-
-        self.load_image() 
+        self.load_image()
 
         ############# End of Layout ######################################
 
-    """
-    Backend functions: 
-        - save_coords(): 
-        - load_image():
-        - previous_image():
-        - next_image():
-
-    """
-
     def on_zoom_completed(self, event):
+        """ Redraw figure when user zooming"""
         if event.name == 'button_release_event':
             self.figure.canvas.mpl_disconnect(self.cid)
             self.cid = self.figure.canvas.mpl_connect('draw_event', self.on_draw_completed)
 
-
     def on_draw_completed(self, event):
+        """ Show coordinate after user finished drawing"""
         self.figure.canvas.mpl_disconnect(self.cid)
-        ax = self.figure.gca()
+        axes = self.figure.gca()
         x_limits = self.x_limits
         y_limits = self.y_limits
-        if ax:
+        if axes:
             # Don't let it pan out of bound
-            x_limits = ax.get_xlim()
-            y_limits = ax.get_ylim()
+            x_limits = axes.get_xlim()
+            y_limits = axes.get_ylim()
 
         self.x_limits = x_limits
         self.y_limits = y_limits
@@ -174,12 +154,14 @@ class MainWindow(QMainWindow):
 
 
     def show_saving(self):
+        """ Show status when user click save button"""
         self.loading_label.setText("Saving...")
         self.loading_label.setStyleSheet("color: green;")
         QApplication.processEvents()
 
 
     def hide_text(self):
+        """ Clear status when saving has been done"""
         self.loading_label.clear()
         QApplication.processEvents()
 
@@ -192,22 +174,23 @@ class MainWindow(QMainWindow):
         """
         self.show_saving()
 
-        PrimaryGrade   = self.dropdown1.currentText()
-        SecondaryGrade = self.dropdown2.currentText()
+        primary_grade   = self.dropdown1.currentText()
+        secondary_grade = self.dropdown2.currentText()
         x_coord    = self.x_coordinate_textbox.text()
         y_coord    = self.y_coordinate_textbox.text()
         image_name     = self.image_name
         user_name      = self.user_name.text()
-        dt             = str(datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
+        dt_             = str(datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
 
-        headers = ["Date&Time", "User", "Image name", "PrimaryGrade", "SecondaryGrade", "xcoord", "ycoord"]
-        values =  [dt, user_name, image_name, PrimaryGrade, SecondaryGrade, x_coord, y_coord]
+        headers = ["Date&Time", "User", "Image name",
+                   "PrimaryGrade", "SecondaryGrade", "xcoord", "ycoord"]
+        values =  [dt_, user_name, image_name, primary_grade, secondary_grade, x_coord, y_coord]
 
         root_folder = "./Results"
         if not os.path.exists(root_folder):
             os.mkdir(root_folder)
         filename = root_folder + os.sep + "Grading_result_" + self.user_name.text() + ".csv"
-        with open(filename, mode="a", newline="") as file:
+        with open(filename, mode="a", newline="", encoding="utf-8") as file:
             writer = csv.writer(file)
             if file.tell() == 0:
                 writer.writerow(headers)
@@ -226,14 +209,14 @@ class MainWindow(QMainWindow):
 
             # Clear the existing axes
             self.figure.clear()
-            self.ax = self.figure.add_subplot(1, 1, 1)
-            self.ax.imshow(img)
-            self.ax.set_title(img_title)
-            self.ax.spines['right'].set_visible(False)
-            self.ax.spines['top'].set_visible(False)
-            ax = self.figure.gca()
-            self.x_limits = ax.get_xlim()
-            self.y_limits = ax.get_ylim()
+            self.axes = self.figure.add_subplot(1, 1, 1)
+            self.axes.imshow(img)
+            self.axes.set_title(img_title)
+            self.axes.spines['right'].set_visible(False)
+            self.axes.spines['top'].set_visible(False)
+            axes = self.figure.gca()
+            self.x_limits = axes.get_xlim()
+            self.y_limits = axes.get_ylim()
             self.x_coordinate_textbox.setText(str(format(self.x_limits[0],".3f")))
             self.y_coordinate_textbox.setText(str(format(self.y_limits[1],".3f")))
             self.x_coordinate_textbox.update()

@@ -24,33 +24,33 @@ The PathoGUI system is designed to assist pathologists in grading and annotating
 ### Data Used
 - Tissue images in the form of '.tif' files.
 + Grading data, including primary and secondary grades, coordinates, and comments.
-###Data Structure
+### Data Structure
 - Tissue images stored in the "../Data" folder.
 + Grading results stored in the "./Results" folder as CSV files.
 ## 4. Use Cases
 ### 4.1 Use Case: Pathologist Grading
 - Objective: Grade and annotate tissue images.
 + Expected Interactions:
-1. Open the PathoGUI tool.
-1. Log in using user identification or PIN.
-1. View images and pan/zoom as needed.
-1. Annotate images with bounding boxes.
-1. Select next image to continue grading.
-1. Save and exit, with the ability to resume later.
+  1. Open the PathoGUI tool.
+  1. Log in using user identification or PIN.
+  1. View images and pan/zoom as needed.
+  1. Annotate images with bounding boxes.
+  1. Select next image to continue grading.
+  1. Save and exit, with the ability to resume later.
 ### 4.2 Use Case: Data Scientist Analysis
 - Objective: Retrieve and analyze pathologist gradings.
 + Expected Interactions:
-1. Retrieve grading data from the PathoGUI tool.
-1. Package/export data for analysis/training.
-1. Conduct data analysis using preferred tools and programming languages.
+  1. Retrieve grading data from the PathoGUI tool.
+  1. Package/export data for analysis/training.
+  1. Conduct data analysis using preferred tools and programming languages.
 ### 4.3 Use Case: Research Assistant/Trainee Learning
 - Objective: Learn to use the PathoGUI tool and review pathologist gradings for learning.
 + Expected Interactions:
-1. Open the PathoGUI tool.
-1. Load pregraded data into the UI for individual training.
-1. Read training documentation.
-1. Interact with the UI to understand image grading.
-1. Use the tool as a learning resource to contribute to the project.
+  1. Open the PathoGUI tool.
+  1. Load pregraded data into the UI for individual training.
+  1. Read training documentation.
+  1. Interact with the UI to understand image grading.
+  1. Use the tool as a learning resource to contribute to the project.
 ## 5. User Stories
 ### 5.1 Technician User Story
 "As a software designer, I want to modify and develop the PathoGUI tool efficiently. I expect the code to be well-written and maintained to facilitate my work."

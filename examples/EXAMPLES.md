@@ -1,5 +1,5 @@
 # Example for Pathology Grading GUI
-This document illustrates how to use Pathology Grading software. Installation guide can be found in *installation_guide.md* in *tech_review* folder. To start the software, run *'python GUI_pyqt5.py'*
+This document illustrates how to use Pathology Grading software. Installation guide can be found in *installation_guide.md* in this folder. To start the software, run *'python GUI_pyqt5.py'*
 
 ## Login
 1) Login page shows up

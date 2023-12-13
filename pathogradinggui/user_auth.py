@@ -26,7 +26,9 @@ specific requirements of your application.
 """
 from PyQt5.QtWidgets import QApplication
 import sys
-sys.path.append("./users")
+#sys.path.append("./users")
+import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from users.User import UserDatabase
 from GUI_pyqt5 import MainWindow
 from login_dialog import show_login_dialog

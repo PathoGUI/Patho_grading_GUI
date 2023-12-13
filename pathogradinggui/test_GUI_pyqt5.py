@@ -14,6 +14,10 @@ import unittest
 import os
 import shutil
 import tempfile
+import pytest
+from pytest import ExitCode
+
+user_auth = pytest.importorskip("user_auth")
 
 from PyQt5.QtWidgets import (
     QMainWindow, QApplication, QWidget, QPushButton,
@@ -29,6 +33,7 @@ from GUI_pyqt5 import MainWindow
 
 class TestMainWindow(unittest.TestCase):
     """ This class manges the test for Patho GUI application"""
+
     def setUp(self):
         """Set up the test environment."""
         self.app = QApplication([])

@@ -21,6 +21,15 @@ After installing the required packages above, run the following command in Anaco
 ```bash
 git clone git@github.com:PathoGUI/Patho_grading_GUI.git
 ```
+To set up the environment, you can run the following: 
+```
+python setup.py install
+```
+Alternatively, run:
+```
+conda env create -f tech_review/CSE583.yml
+```
+Look at requirements.txt, or 
 
 ## Data
 Prostate cancer dataset is used for for testing out this GUI visualization tool. In total there are 182 pathology images (prostate biopsy), which come from a cohort of 56 patients. The format of the images are `.TIF` files. These prostate cancer image has an agressiveness of Gleason pattern 3 to 5. 

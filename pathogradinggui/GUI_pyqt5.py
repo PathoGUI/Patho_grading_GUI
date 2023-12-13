@@ -5,6 +5,8 @@ import csv
 import time
 import datetime
 import matplotlib.image as mpimg
+import warnings
+warnings.filterwarnings("ignore")
 
 from PyQt5.QtWidgets import (
     QMainWindow, QApplication, QWidget, QPushButton,
@@ -27,7 +29,16 @@ class MainWindow(QMainWindow):
 
         # Load images and initialize image index
         image_path_list = []
-        for element in os.listdir("../Data"):
+        if getattr(sys, 'frozen', False):
+            # If the application is run as a bundle
+            self.base_path = sys._MEIPASS
+        else:
+            # If the application is run as a script
+            self.base_path = os.path.abspath("..")
+
+        data_path = os.path.join(self.base_path, 'Data')
+        for element in os.listdir(data_path):
+        #for element in os.listdir("../Data"):
             if element.startswith("S") and element.endswith('.tif'):
                 image_path_list.append(element)
         self.image_paths = image_path_list
@@ -187,7 +198,7 @@ class MainWindow(QMainWindow):
                    "PrimaryGrade", "SecondaryGrade", "xcoord", "ycoord", "User comment"]
         values =  [dt_, user_name, image_name, primary_grade, secondary_grade, x_coord, y_coord, comment]
 
-        root_folder = "./Results"
+        root_folder = self.base_path + os.sep + "Results"
         if not os.path.exists(root_folder):
             os.mkdir(root_folder)
         filename = root_folder + os.sep + "Grading_result_" + self.user_name.text() + ".csv"
@@ -204,7 +215,14 @@ class MainWindow(QMainWindow):
         """Load and display the current image."""
         if 0 <= self.image_index < len(self.image_paths):
             self.image_name = self.image_paths[self.image_index]
-            img = mpimg.imread('../Data/' + self.image_name)
+            if getattr(sys, 'frozen', False):
+                base_path = sys._MEIPASS
+            else:
+                base_path = os.path.abspath("..")
+
+            image_path = os.path.join(base_path, 'Data', self.image_name)
+            #img = mpimg.imread('../Data/' + self.image_name)
+            img = mpimg.imread(image_path)
 
             img_title = "Biopsy name: " + self.image_name.split(".tif")[0]
 

@@ -1,4 +1,4 @@
-"""
+    """
 Testing GUI_pyqt5.py for the following function
 1) test_load_image (smoke test)
 2) test_clear_input (one-shot test)
@@ -14,6 +14,7 @@ import unittest
 import os
 import shutil
 import tempfile
+import pytest
 
 from PyQt5.QtWidgets import (
     QMainWindow, QApplication, QWidget, QPushButton,
@@ -29,6 +30,15 @@ from GUI_pyqt5 import MainWindow
 
 class TestMainWindow(unittest.TestCase):
     """ This class manges the test for Patho GUI application"""
+    user_auth = pytest.importorskip('user_auth')
+    login_dialog = pytest.importorskip('login_dialog')
+
+    def test_user_auth():
+        assert user_auth.is_enabled()
+    def test_login_dialog():
+        assert login_dialog.is_enabled()
+
+
     def setUp(self):
         """Set up the test environment."""
         self.app = QApplication([])

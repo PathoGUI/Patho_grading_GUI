@@ -1,4 +1,4 @@
-    """
+"""
 Testing GUI_pyqt5.py for the following function
 1) test_load_image (smoke test)
 2) test_clear_input (one-shot test)

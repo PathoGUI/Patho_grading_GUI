@@ -180,11 +180,12 @@ class MainWindow(QMainWindow):
         y_coord    = self.y_coordinate_textbox.text()
         image_name     = self.image_name
         user_name      = self.user_name.text()
-        dt_             = str(datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
+        dt_            = str(datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
+        comment = self.comment_textbox.text()
 
         headers = ["Date&Time", "User", "Image name",
-                   "PrimaryGrade", "SecondaryGrade", "xcoord", "ycoord"]
-        values =  [dt_, user_name, image_name, primary_grade, secondary_grade, x_coord, y_coord]
+                   "PrimaryGrade", "SecondaryGrade", "xcoord", "ycoord", "User comment"]
+        values =  [dt_, user_name, image_name, primary_grade, secondary_grade, x_coord, y_coord, comment]
 
         root_folder = "./Results"
         if not os.path.exists(root_folder):

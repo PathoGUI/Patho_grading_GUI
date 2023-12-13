@@ -16,6 +16,8 @@ import shutil
 import tempfile
 import pytest
 
+user_auth = pytest.importorskip("user_auth")
+
 from PyQt5.QtWidgets import (
     QMainWindow, QApplication, QWidget, QPushButton,
     QLabel,QComboBox,
@@ -28,7 +30,6 @@ from login_dialog import LoginDialog, show_login_dialog
 
 from GUI_pyqt5 import MainWindow
 
-@pytest.mark.skip(reason="no way of currently testing this")
 class TestMainWindow(unittest.TestCase):
     """ This class manges the test for Patho GUI application"""
 

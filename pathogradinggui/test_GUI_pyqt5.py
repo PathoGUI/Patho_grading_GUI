@@ -32,8 +32,8 @@ class TestMainWindow(unittest.TestCase):
     """ This class manges the test for Patho GUI application"""
     
     
-    skip1 = pytest.importorskip('user_auth.skip1')
-    skip2 = pytest.importorskip('login_dialog.skip2')
+    user_auth = pytest.importorskip('user_auth.skip1')
+    login_dialog = pytest.importorskip('login_dialog.skip2')
 
     
 

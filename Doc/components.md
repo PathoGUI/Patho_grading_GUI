@@ -1,59 +1,78 @@
-# Components
+# Component specification
+### Main components
+1. [Authenticate users](#1-authenticate-users)
+2. [Image visualizer and navigation tools](#2-image-visualizer-and-navigation-tools)
+3. [Displays: "User name", "x-coordinate", "y-coordinate"](#3-displays-user-name-x-coordinate-y-coordinate)
+4. [Comment textbox](#4-comment-text-box)
+5. [Dropdowns: "Primary grading", "Secondary grading"](#5-dropdowns-primary-grading-secondary-grading)
+6. [Buttons: "Next", "Previous", "Clear all", "Save"](#6-buttons-next-previous-clear-all-save)
 
-## GUI:
+## 1. Authenticate users
+- *What it does:* Verifies a user is in the database or creates new user.
+- *Inputs:* User name, user password (stings).
+- *Outputs:* True if success, Flase if failure (Boolean).
 
-- What it does: Shows features, allows pathologist to grade and tag data. Displays and moves through sequence of images.
-- Inputs: Raw data (file directory with .tif files), pathologist UID, model selection for AI pregrading.
-- Outputs: Tagged/graded images (.csv or .json dict or both)
-- How to use other components: Buttons, dropdouns, mouse clicks
+## 2. Image visualizer and navigation tools
+**Image visualizer**
 
-## Annotation of Images:
+- *What it does:* Visualize prostate cancer pathology image, along with an image title of sample name, x and y-axis. 
+- *Inputs:* Raw data of .TIF files directories (String).
+- *Outputs:* Matplotlib canvas showing the 2D numpy array image.
 
-- What it does: Displays a box where the user selects, records the coordinates of the box, associates the boxes with their respective image. 
-- Inputs: Boxes, images
-- Outputs: images and box coordinates (linked)
-- How to use other components: Click and drag to generate box regions for each image
+**Navigation tools**
+- *What it does:* Zoom in, pan to a different region.
+- *Inputs:* Click trigger (Boolean).
+- *Outputs:* Shows zoomed in or specific regions of the image.
 
-## Buttons:
+## 3. Displays: "User name", "x-coordinate", "y-coordinate"
+**User name display**
+- *What it does:* Displays the name of the user who logged in.
+- *Inputs*: Initialized/triggered by "Authenticate user" (Boolean).
+- *Outputs*: Name of the user displays on the Username textbox (String). 
 
-### Next Image:
+**x-coordinate display**
+- *What it does:* Displays the x-coordinate of a zoomed in region .
+- *Inputs:* Triggered when the navigation button is pushed and canvas finished visualizing image (Boolean). 
+- *Outputs:* x-coordinate of the current zoomed in region of the image, displaying on the x-coordinate textbox (float64). 
 
-### Previous Image:
+**y-coordinate display**
+- *What it does:* Displays the y-coordinate of a zoomed in region .
+- *Inputs:* Triggered when the navigation button is pushed and canvas finished visualizing image (Boolean). 
+- *Outputs:* y-coordinate of the current zoomed in region of the image, displaying on the y-coordinate textbox (float64). 
 
-### Select Directory:
+## 4. Comment text box
+- *What it does:* Allows user to enter comment about the image.
+- *Inputs*: User comments (String)
+- *Ouputs:* /
 
-### Export:
+## 5. Dropdowns: "Primary grading", "Secondary grading"
+**Primary grading**
+- *What it does:* Allows user to choose the cancer aggressiveness of the displaying prostate cancer pathology image, i.e. grade 3, grade 4, and grade 5, as the primary (dominating) cancer pattern. 
+- *Inputs:* Dropdown manuals of "3", "4", or "5" (String)
+- *Outputs:* /
 
-### Save (partially graded):
+**Secondary grading**
+- *What it does:* Allows user to choose the cancer aggressiveness of the displaying prostate cancer pathology image, i.e. grade 3, grade 4, and grade 5, as the secondary(non-dominating) cancer pattern. 
+- *Inputs:* Dropdown manuals of "3", "4", or "5" (String)
+- *Outputs:* /
 
-### Clear Image:
+## 6. Buttons: "Next", "Previous", "Clear all", "Save"
+**Next button**
+- *What it does:* Display the next pathology image on the image dataset list. 
+- *Inputs:* Triggered by pushing the button (boolean), loading the next .TIF file directory (String)
+- *Outputs:* Matplotlib canvas showing the next 2D numpy array image.
 
-### Clear All Images:
+**Previous button**
+- *What it does:* Display the previous pathology image on the image dataset list. 
+- *Inputs:* Triggered by pushing the button (boolean), loading the previous .TIF file directory (String).
+- *Outputs:* Matplotlib canvas showing the previous 2D numpy array image.
 
-### Grading tags: if Good/Bad
+**Clear all button**
+- *What it does:* Clear all entries for user inputs, including primary grading, secondary grading, and user comments.
+- *Inputs: *Triggered by pushing the button (boolean).
+- *Outputs:* Cleared primary grade and secondary grade and dropdowns.
 
-## Dropdowns:
-
-### Grading tags: if >2 attributes
-
-### Select Model
-
-## Pan:
-
-## Zoom:
-
-## Input Image Directory:
-
-### Popup Window:
-
-## Output Directory:
-
-### Popup Window:
-
-## UID Database:
-
-### Popup for Entry and Auth.:
-
-## Model Database/Directory:
-
-## Executable File:
+**Save button**
+- *What it does:* Save all user inputs into a .csv file, including the following 8 parameters: Datetime, user name, image name, user comments, x-coordinate, y-coordinate, primary grading, and secondary grading. 
+- *Inputs:* Triggered by pushing the button (boolean), and the values of the 8 parameters (String).
+- *Outputs:* .CSV file tabulating all the 8 parameters.

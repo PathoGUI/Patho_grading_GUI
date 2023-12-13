@@ -15,6 +15,7 @@ import os
 import shutil
 import tempfile
 import pytest
+from pytest import ExitCode
 
 user_auth = pytest.importorskip("user_auth")
 

@@ -27,7 +27,9 @@ python setup.py install
 ```
 Alternatively, run:
 ```
-conda env create -f tech_review/CSE583.yml
+onda env create -f environment.yml
+
+conda activate patho_gui_env
 ```
 Look at requirements.txt, or 
 
